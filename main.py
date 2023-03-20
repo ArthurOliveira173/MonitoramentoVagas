@@ -45,19 +45,19 @@ def checarVagas(refDilatada, lot):
         #mostrarRecortes(vagaInstancia, count)
 
         #Mostra o número de pixels brancos em cada vaga
-        mostrarPixels(x, y, w, h, vagaInstancia, count, lot)
+        #mostrarPixels(x, y, w, h, vagaInstancia, count, lot)
 
         #Verificar o estado de disponibilidade da vaga (Disponível/Ocupado)
         status = verificarDisponibilidade(vagaInstancia, count)
 
         # Mostrar a disponibilidade de cada vaga através de polígonos (verde: livre, vermelho: ocupado)
-        livres = mostrarStatus(vaga, livres, status, lot)
+        livres = mostrarStatus(vagasG[count-1], livres, status, lot)
 
         #Incrementando auxiliar
         count = count + 1
 
-    # cvzone.putTextRect(lot, "Vagas livres: "+str(livres)+"/58", (25, 45), scale=1.5, thickness=2, offset=0, colorR=(188, 188, 188),
-    #                    colorT=(0, 0, 0), font=cv.FONT_HERSHEY_DUPLEX)
+    cvzone.putTextRect(lot, "Vagas livres: "+str(livres)+"/58", (25, 45), scale=1.5, thickness=2, offset=0, colorR=(188, 188, 188),
+                       colorT=(0, 0, 0), font=cv.FONT_HERSHEY_DUPLEX)
 
 #Função para mostrar o recorte de cada vaga individual durante a execução do vídeo
 def mostrarRecortes(vaga, count):
@@ -109,46 +109,6 @@ def timer(segundos, lot):
                        colorR=(188, 188, 188),
                        colorT=(0, 0, 0), font=cv.FONT_HERSHEY_DUPLEX)
 
-def main():
-    # Contador para remover excesso de quadros para acelerar o vídeo
-    frameCut = 0
-
-    cap.set(cv.CAP_PROP_POS_FRAMES, 0)
-    while True:
-        # Se o quadro atual for o último quadro do vídeo, o vídeo é reproduzido novamente
-        if cap.get(cv.CAP_PROP_POS_FRAMES) == cap.get(cv.CAP_PROP_FRAME_COUNT):
-            cap.set(cv.CAP_PROP_POS_FRAMES, 0)
-            segundos = 0
-
-        # Reprodução do vídeo
-        success, ref = cap.read()
-
-        frameCut += 1
-        if not success:
-            break
-        elif frameCut != 1:
-            if frameCut >= 8:
-                frameCut = 0
-        else:
-            # Transformação do vídeo em pixels binários (preto e branco)
-            refCinza = cv.cvtColor(ref, cv.COLOR_BGR2GRAY)
-            refBlur = cv.GaussianBlur(refCinza, (3, 3), 1)
-            refBordas = cv.adaptiveThreshold(refBlur, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY_INV, 25, 16)
-            refMediano = cv.medianBlur(refBordas, 3)
-            kernel = numpy.ones((1, 2), numpy.uint8)
-            refDilatada = cv.dilate(refMediano, kernel, iterations=1)
-
-            # Checar disponibilidade das vagas pelo vídeo transformado
-            checarVagas(refDilatada, ref)
-
-            # Mostrar janela
-            cv.imshow("Estacionamento", ref)
-
-            # Encerra o programa ao apertar a tecla Esc
-            if cv.waitKey(20) & 0xFF == 27:
-                break
-main()
-
 #Marcadores de tempo
 segundos = 0
 frames = 0
@@ -159,7 +119,6 @@ def mainRun():
     #Contador para remover excesso de quadros para acelerar o vídeo
     frameCut = 0
 
-    cap.set(cv.CAP_PROP_POS_FRAMES, 1500000)
     while True:
         # Leitura de imagem para mostrar disponibilidade de vagas
         lot = cv.imread('static/parking.jpg')
@@ -189,9 +148,6 @@ def mainRun():
 
             # Checar disponibilidade das vagas pelo vídeo transformado
             checarVagas(refDilatada, lot)
-
-            # Mostrar janela
-            #cv.imshow("Estacionamento", ref)
 
             frames += 1
             #Registra o tempo durante a execução
