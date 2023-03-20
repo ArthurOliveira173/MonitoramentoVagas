@@ -127,7 +127,7 @@ def main():
         if not success:
             break
         elif frameCut != 1:
-            if frameCut >= 30:
+            if frameCut >= 8:
                 frameCut = 0
         else:
             # Transformação do vídeo em pixels binários (preto e branco)
@@ -147,9 +147,7 @@ def main():
             # Encerra o programa ao apertar a tecla Esc
             if cv.waitKey(20) & 0xFF == 27:
                 break
-
 main()
-
 
 #Marcadores de tempo
 segundos = 0
